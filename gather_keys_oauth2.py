@@ -135,13 +135,23 @@ class OAuth2Server:
             threading.Timer(1, cherrypy.engine.exit).start()
 
 
-if __name__ == '__main__':
-    if not (len(sys.argv) == 3):
-        print("Arguments: client_id and client_secret")
-        sys.exit(1)
+def main(ID:str, SECRET:str):
+    """ to authorize user and generate user and client details
 
-    client_id = sys.argv[1]
-    client_secret = sys.argv[2]
+    Parameters
+    ----------
+    ID : str
+        User ID string. 
+    SECRET : str
+        User secret string.
+
+    Returns
+    -------
+    None.
+    """
+
+    client_id = ID
+    client_secret = SECRET
     server = OAuth2Server(client_id, client_secret)
     server.browser_authorize()
 
