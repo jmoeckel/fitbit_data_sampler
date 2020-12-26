@@ -17,6 +17,27 @@ from base64 import b64encode
 from fitbit.api import Fitbit
 from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
 
+# This is to replace cherrypy.quickstart
+class _StateEnum(object):
+
+    class State(object):
+        name = None
+
+        def __repr__(self):
+            return 'states.%s' % self.name
+
+    def __setattr__(self, key, value):
+        if isinstance(value, self.State):
+            value.name = key
+        object.__setattr__(self, key, value)
+
+states = _StateEnum()
+states.STOPPED = states.State()
+states.STARTING = states.State()
+states.STARTED = states.State()
+states.STOPPING = states.State()
+states.EXITING = states.State()
+
 CLIENT_DETAILS_FILE = 'client_details.json'  # configuration for for the client
 USER_DETAILS_FILE = 'user_details.json'  # user details file
 
@@ -58,7 +79,24 @@ class OAuth2Server:
         cherrypy.config.update({'server.socket_host': urlparams.hostname,
                                 'server.socket_port': urlparams.port})
 
-        cherrypy.quickstart(self)
+        # The following is to replace: cherrypy.quickstart(self)
+        cherrypy.tree.mount(self)
+        engine = cherrypy.engine
+        
+        engine.signals.subscribe()
+        engine.start()  
+        
+        try:
+            engine.wait(states.EXITING, interval=0.1, channel='main')
+        except (KeyboardInterrupt, IOError):
+            # The time.sleep call might raise
+            # "IOError: [Errno 4] Interrupted function call" on KBInt.
+            engine.log('Keyboard Interrupt: shutting down bus')
+            engine.exit()
+        except SystemExit:
+            engine.log('SystemExit raised: shutting down bus')
+            engine.exit()
+            raise
 
     @cherrypy.expose
     def index(self, state, code=None, error=None):
