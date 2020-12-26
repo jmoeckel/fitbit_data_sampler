@@ -11,6 +11,7 @@ import threading
 import traceback
 import webbrowser
 import json
+import inspect
 
 from urllib.parse import urlparse
 from base64 import b64encode
@@ -38,8 +39,11 @@ states.STARTED = states.State()
 states.STOPPING = states.State()
 states.EXITING = states.State()
 
-CLIENT_DETAILS_FILE = 'client_details.json'  # configuration for for the client
-USER_DETAILS_FILE = 'user_details.json'  # user details file
+# filepathes for details-files
+dp_thisdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+CLIENT_DETAILS_FILE = os.path.join(dp_thisdir, 'client_details.json')  # configuration for for the client
+USER_DETAILS_FILE = os.path.join(dp_thisdir, 'user_details.json') # user details file
+
 
 
 class OAuth2Server:
