@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Note: This file was adapted from the unoffiicial Python Fitbit client Git repo:
 https://raw.githubusercontent.com/orcasgit/python-fitbit/master/gather_keys_oauth2.py
@@ -14,7 +12,6 @@ import json
 import inspect
 
 from urllib.parse import urlparse
-from base64 import b64encode
 from fitbit.api import Fitbit
 from oauthlib.oauth2.rfc6749.errors import MismatchingStateError, MissingTokenError
 
@@ -43,7 +40,6 @@ states.EXITING = states.State()
 dp_thisdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 CLIENT_DETAILS_FILE = os.path.join(dp_thisdir, 'client_details.json')  # configuration for for the client
 USER_DETAILS_FILE = os.path.join(dp_thisdir, 'user_details.json') # user details file
-
 
 
 class OAuth2Server:
@@ -171,4 +167,3 @@ def main(ID:str, SECRET:str):
     print("Writing user details to file for usage on next collection.")
     with open(USER_DETAILS_FILE, 'w') as f:
         json.dump(server.fitbit.client.session.token, f)
-
