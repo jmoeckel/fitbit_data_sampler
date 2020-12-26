@@ -209,7 +209,7 @@ def sample_data_period(date_start:str, dp_data=None):
     None.
 
     """
-    d0 = datetime.strptime(date_start, "%Y-%m-%d")
+    d0 = datetime.datetime.strptime(date_start, "%Y-%m-%d")
     d1 = datetime.datetime.now()
     
     dt = d1 - d0
