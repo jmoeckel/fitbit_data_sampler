@@ -98,6 +98,14 @@ def sample_data(sdate=None, dp_data=None):
                           refresh_cb=refresh_callback,
                           system='metric')
    
+    # Check, if devices have been synced:
+    dt_sdate = datetime.datetime.strptime(sdate, '%Y-%m-%d')
+    devices = fitti.make_request(r'https://api.fitbit.com/1.2/user/-/devices.json')
+    for device in devices:
+        lastsync = device['lastSyncTime']
+        dt_ls = datetime.datetime.strptime(lastsync.split('T')[0], '%Y-%m-%d')        
+        assert (dt_ls-dt_sdate).days>=0, f'Device {device["deviceVersion"]} has been synced last time on {dt_ls}.'
+        
     # intraday activities
     activities = ['heart', 'steps', 'distance', 'floors', 'elevation']
     
